@@ -7,7 +7,7 @@
 ]).
 
 %
-% Allocate booking B = {book, Vehicle, VId, StartTime, EndTime}
+% Allocate booking B = {Vehicle, VId, StartTime, EndTime}
 %
 allocate_booking(VBList, {_Vehicle, VId, StartTime, EndTime}, Cost) ->
 	case is_slot_available(VBList, StartTime, EndTime) of
