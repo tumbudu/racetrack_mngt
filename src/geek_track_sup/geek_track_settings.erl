@@ -30,7 +30,7 @@ get_track_info_list() -> [
 
 booking_rules() ->
 	#{
-		start_time => {10, 0, 0},
+		start_time => {13, 0, 0},
 		end_time => {20, 0, 0},
 		min_booking_hrs => {3, 0, 0},
 		track_order => [regular, vip]

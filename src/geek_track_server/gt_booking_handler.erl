@@ -56,9 +56,18 @@ handle_booking({Vehicle, VId, StartTime, EndTime}=B, State) ->
 			Bookings1 = lists:keyreplace(Vehicle, 1, Bookings, {Vehicle, FVBookings}),
 			{success ,State#{bookings:=Bookings1}};
 		false ->
-			{not_allocated, State}
+			{race_trace_full, State}
 	end.
 
 
-calculate_revenue(_State) ->
-	0.
+calculate_revenue(State) ->
+	Bookings = maps:get(bookings, State),
+
+	lists:foldl(fun({_V, BList}, Acc) ->
+		lists:foldl(fun(TList, Acc1) ->
+			lists:foldl(fun
+				({_, {_, _, C}}, Acc2) ->
+					C + Acc2
+			end, Acc1, TList)
+		end, Acc, BList)
+	end, 0, Bookings).

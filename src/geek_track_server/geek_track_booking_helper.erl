@@ -26,6 +26,7 @@ allocate_booking(VBList, {_Vehicle, VId, StartTime, EndTime}, Cost) ->
 is_valid_entry_time(BookingRules, StartTime, EndTime) ->
 	BookingStartTime = maps:get(start_time, BookingRules),
 	BookingEndTime = maps:get(end_time, BookingRules),
+
 	A = (StartTime >= BookingStartTime) and (StartTime =< BookingEndTime),
 	B = (EndTime >= BookingStartTime) and (EndTime =< BookingEndTime),
 	A and B.
@@ -85,7 +86,7 @@ get_cost(Vehicle, StartTime, EndTime, State) ->
 	get_cost(BookingType, Vehicle, RateList, BookingDuration, MinDurationOfBooking).
 
 get_cost(regular, Vehicle, RateList, _BookingDuration, _MinDurationOfBooking) ->
-	proplists:get_value(Vehicle, RateList);
+	3 * proplists:get_value(Vehicle, RateList);
 
 get_cost(additional, _Vehicle, _RateList, BookingDuration, MinDurationOfBooking) when BookingDuration < MinDurationOfBooking ->
 	0;

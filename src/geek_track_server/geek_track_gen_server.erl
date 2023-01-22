@@ -18,10 +18,13 @@
 % apis
 %
 -export([
+	reset/1,
 	book/4,
 	additional/3,
 	revenue/1
 ]).
+
+
 
 start_link(TrackInfo, BookingRules) ->
 	ServerName = maps:get(rt_type, TrackInfo),
@@ -44,9 +47,11 @@ handle_call({additional, {VId, EndTime}}, _From, State) ->
 	handle_additional_booking(VId, EndTime, State);
 
 handle_call(revenue, _From, State) ->
-	Msg = geek_track_booking:calculate_revenue(State),
+	Msg = gt_booking_handler:calculate_revenue(State),
 	{reply, Msg, State};
 
+handle_call(reset, _From, State) ->
+	{reply, ok, reset_state(State)};
 
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
@@ -76,14 +81,15 @@ additional(TrackId, VId, EndTime) ->
 revenue(TrackId) ->
 	gen_server:call(TrackId, revenue).
 
-
-
+reset(TrackId) ->
+	gen_server:call(TrackId, reset).	
 
 %
 % Init state
 %
 
-init_state(TrackInfo, BookingRules) ->#{
+init_state(TrackInfo, BookingRules) ->
+#{
 	trackid => maps:get(rt_type, TrackInfo),
 	booking_rules => BookingRules,
 	allowed_cars => maps:get(allowed_cars, TrackInfo),
@@ -98,6 +104,21 @@ init_bookings(Vehicles) ->
 	lists:map(fun({Type, Ctr}) ->
 		{Type, [[] || _N <- lists:seq(1, Ctr)]}
 	end, Vehicles).
+
+
+%
+% This is for testing only..
+%
+reset_state(State) ->
+	Bookings = maps:get(bookings, State),
+
+	EmptyBookings = lists:map(fun({Type, List}) ->
+		{Type, [[] || _I <- List]}
+	end, Bookings),
+
+	State#{
+		bookings := EmptyBookings
+	}.
 
 
 %
@@ -123,6 +144,9 @@ handle_additional_booking(VId, EndTime, State) ->
 	case get_bookings(VId, State) of
 		{true, {V, BList}} ->
 			case get_nearest_endtime(BList, EndTime) of
+				{_, undefined} ->
+					{reply, invalid_exit_time, State};
+
 				{true, STime} ->
 					BookingDetails = {V, VId, STime, EndTime},
 					try
@@ -133,8 +157,9 @@ handle_additional_booking(VId, EndTime, State) ->
 							% erlang:display([T,E,Stacktrace]),
 							{reply, E, State}
 					end;
+
 				{false, _} ->
-					{reply, invalide_exit_time, State}
+					{reply, invalid_exit_time, State}
 			end;
 		_ ->
 			{reply, booking_not_found, State}
@@ -164,8 +189,12 @@ get_bookings(VId, State) ->
 get_nearest_endtime(BList, EndTime) ->
 	ETimeList = [ETime || {_STime, ETime, _} <- BList],
 	SortedTList = lists:sort(ETimeList ++ [EndTime]),
+	FTList = lists:filter(fun
+		(T) when T =< EndTime -> true;
+		(_T) -> false
+	end, SortedTList),
 	lists:foldl(fun
 		(Time, {false, LTime}) when Time == EndTime ->  {true, LTime};
 		(Time, {false, _LTime}) -> {false, Time};
 		(_, {true, LTime}) -> {true, LTime}
-	end, {false, undefined}, SortedTList).
+	end, {false, undefined}, FTList).

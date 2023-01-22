@@ -39,6 +39,11 @@ init([]) ->
 			id => track_sup,
 			start => {geek_track_sup, start_link, []},
 			type => supervisor
+		},
+		#{
+			id => track_mgr,
+			start => {geek_track_mgr, start_link, []},
+			type => worker
 		}
 	],
 	{ok, {SupFlags, ChildSpecs}}.

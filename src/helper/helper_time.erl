@@ -4,7 +4,8 @@
 	time_diff/2,
 	get_duration_in_hrs/1,
 	is_overlapping/4,
-	is_in_middle/3
+	is_in_middle/3,
+	format_time/1
 ]).
 
 time_add({H1, M1, S1}, {H2, M2, S2}) ->
@@ -36,3 +37,8 @@ is_in_middle(BTime, STime, ETime) ->
 		[_, BTime, _] -> true;
 		_ -> false
 	end.
+
+format_time(Time) ->
+	[Hr, Min] = string:tokens(Time, ":"),
+	{list_to_integer(Hr), list_to_integer(Min), 0}.
+	
