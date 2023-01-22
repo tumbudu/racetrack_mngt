@@ -1,5 +1,4 @@
 -module(geek_track_gen_server_SUITE).
--include_lib("common_test/include/ct.hrl").
 
 -export([
 	all/0,

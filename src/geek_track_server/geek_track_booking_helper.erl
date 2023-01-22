@@ -6,9 +6,6 @@
 	allocate_booking/3
 ]).
 
--define(D(X),  erlang:display({?MODULE, ?LINE, X})).
-
-
 %
 % Allocate booking B = {book, Vehicle, VId, StartTime, EndTime}
 %

@@ -12,7 +12,6 @@
 -export([init/1]).
 
 -define(SERVER, ?MODULE).
--define(D(X), io_lib:format("~p~n", [X])).
 
 
 start_link() ->

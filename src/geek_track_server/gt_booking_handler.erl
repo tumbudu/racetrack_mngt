@@ -5,8 +5,6 @@
 	calculate_revenue/1
 ]).
 
--define(D(X),  erlang:display({?MODULE, ?LINE, X})).
-
 
 %
 % handler functions

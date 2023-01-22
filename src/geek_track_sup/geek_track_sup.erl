@@ -4,7 +4,6 @@
 -export([init/1, get_child_specs/0]).
 
 -define(SERVER, ?MODULE).
--define(D(X), io_lib:format("~p~n", [X])).
 
 start_link() ->
 	supervisor:start_link({local, ?SERVER}, ?MODULE, []).

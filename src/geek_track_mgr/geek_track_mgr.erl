@@ -2,8 +2,6 @@
 -behaviour(gen_server).
 
 -export([start_link/0]).
--define(D(X),  erlang:display({?MODULE, ?LINE, X})).
-
 
 %% gen_server callbacks
 -export([init/1,

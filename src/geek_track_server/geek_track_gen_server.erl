@@ -1,9 +1,6 @@
 -module(geek_track_gen_server).
-
 -behaviour(gen_server).
-
 -export([start_link/2]).
--define(D(X),  erlang:display({?MODULE, ?LINE, X})).
 
 
 %% gen_server callbacks
